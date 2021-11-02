@@ -8,16 +8,16 @@ import (
 	"time"
 )
 
+// handle errors on server side
 func (app *application) serverError(res http.ResponseWriter, err error) {
-	// record the error message  and the stack trace
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.errLog.Output(2, trace)
 	app.errLog.Println(trace)
 
-	// response an error message to the remote
 	http.Error(res, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
+// handle errors on client side
 func (app *application) clientError(res http.ResponseWriter, statusCode int) {
 	http.Error(res, http.StatusText(statusCode), statusCode)
 }
@@ -43,7 +43,6 @@ func (app *application) render(res http.ResponseWriter, req *http.Request, pageN
 
 	buf.WriteTo(res)
 }
-
 
 // generate the year data before rendering a page
 func (app *application) addTmplYear(tmplData *Templates, req *http.Request) *Templates {

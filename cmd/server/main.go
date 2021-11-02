@@ -13,9 +13,9 @@ import (
 )
 
 type application struct {
-	errLog   *log.Logger
-	infoLog  *log.Logger
-	snippets *mysql.SnippetModel
+	errLog        *log.Logger
+	infoLog       *log.Logger
+	snippets      *mysql.SnippetModel
 	templateCache map[string]*template.Template
 }
 
@@ -37,18 +37,16 @@ func main() {
 	}
 	defer db.Close()
 
-
 	// templates cached in the memory
 	tmplCache, err := newTemplateCache(path.Join("..", "..", "app", "html"))
 	if err != nil {
 		errorLog.Println(err)
 	}
 
-
 	app := &application{
-		errLog:   errorLog,
-		infoLog:  infoLog,
-		snippets: &mysql.SnippetModel{DB: db},
+		errLog:        errorLog,
+		infoLog:       infoLog,
+		snippets:      &mysql.SnippetModel{DB: db},
 		templateCache: tmplCache,
 	}
 
