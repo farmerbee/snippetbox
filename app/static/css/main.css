@@ -22,10 +22,16 @@ header, nav, main, footer {
 }
 
 main {
+    /*width: 80%;*/
     margin-top: 54px;
     margin-bottom: 54px;
     min-height: calc(100vh - 345px);
     overflow: auto;
+}
+
+main code {
+    /*width: 100%;*/
+    overflow: scroll;
 }
 
 h1 a {
@@ -179,7 +185,7 @@ form input[type="text"], form input[type="password"], form input[type="email"] {
     width: 100%;
 }
 
-form input[type=text], form input[type="password"], form input[type="email"], textarea {
+form input[type="text"], form input[type="password"], form input[type="email"], textarea {
     color: #6A6C6F;
     background: #FFFFFF;
     border: 1px solid #E4E5E7;

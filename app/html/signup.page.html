@@ -1,0 +1,34 @@
+{{template "base" .}}
+
+{{define "title"}}Signup{{end}}
+
+{{define "main"}}
+    <form action="/user/signup" method="post">
+        {{with .Form}}
+            <div>
+                <label for="">user name</label>
+                {{with .Errors.Get "username"}}
+                    <label for="" class="error">{{.}}</label>
+                {{end}}
+                <input type="text" name="username" id="">
+            </div>
+            <div>
+                <label for="">email</label>
+                {{with .Errors.Get "email"}}
+                    <label for="" class="error">{{.}}</label>
+                {{end}}
+                <input type="email" name="password" id="">
+            </div>
+            <div>
+                <label for="">password</label>
+                {{with .Errors.Get "password"}}
+                    <label for="" class="error">{{.}}</label>
+                {{end}}
+                <input type="password" name="password" id="">
+            </div>
+            <div>
+                <input type="submit" value="Signup">
+            </div>
+        {{end}}
+    </form>
+{{end }}

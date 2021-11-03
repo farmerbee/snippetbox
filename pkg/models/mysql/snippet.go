@@ -11,7 +11,7 @@ type SnippetModel struct {
 }
 
 func (s *SnippetModel) Insert(title, content, expire string) (int, error) {
-	statement := `INSERT INTO (snippets title, content, created, expire) VALUES
+	statement := `INSERT INTO snippets (title, content, created, expire) VALUES
 				(?, ?, UTC_TIMESTAMP, DATE_ADD(UTC_TIMESTAMP, INTERVAL ? DAY))`
 
 	res, err := s.DB.Exec(statement, title, content, expire)
@@ -33,12 +33,11 @@ func (s *SnippetModel) Get(id int) (*models.Snippet, error) {
 	snippet := &models.Snippet{}
 	err := s.DB.QueryRow(query, id).Scan(&snippet.Id, &snippet.Title, &snippet.Content, &snippet.Created, &snippet.Expire)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, models.ErrNoRecord
 		}
 		return nil, err
 	}
-
 
 	return snippet, nil
 }

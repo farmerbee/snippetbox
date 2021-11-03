@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blog/pkg/form"
 	"blog/pkg/models"
 	"html/template"
 	"path"
@@ -8,8 +9,11 @@ import (
 	"time"
 )
 
+// Templates store the data of HTML templates to be rendered
 type Templates struct {
 	Year     int
+	Flash    string
+	Form     *form.Form
 	Snippet  *models.Snippet
 	Snippets []*models.Snippet
 }
