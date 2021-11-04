@@ -11,11 +11,12 @@ import (
 
 // Templates store the data of HTML templates to be rendered
 type Templates struct {
-	Year     int
-	Flash    string
-	Form     *form.Form
-	Snippet  *models.Snippet
-	Snippets []*models.Snippet
+	Year          int
+	Flash         string
+	Authenticated bool
+	Form          *form.Form
+	Snippet       *models.Snippet
+	Snippets      []*models.Snippet
 }
 
 // customize the style of time

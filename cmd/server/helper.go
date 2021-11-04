@@ -51,8 +51,11 @@ func (app *application) addDefault(tmplData *Templates, req *http.Request) *Temp
 	}
 	tmplData.Year = time.Now().Year()
 	tmplData.Flash = app.session.PopString(req, "flash")
+	tmplData.Authenticated = app.isAuthenticated(req)
 
 	return tmplData
 }
 
-
+func (app *application) isAuthenticated(r *http.Request) bool {
+	return app.session.Exists(r, "authenticatedId")
+}

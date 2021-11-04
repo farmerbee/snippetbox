@@ -2,6 +2,8 @@ package main
 
 import (
 	"blog/pkg/form"
+	"blog/pkg/models"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -84,19 +86,80 @@ func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userLoginForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "user post login data")
+	err := r.ParseForm()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	email := r.PostForm.Get("email")
+	password := r.PostForm.Get("password")
+	var id int
+	if id, err = app.users.Authenticate(email, password); err != nil {
+		if errors.Is(err, models.ErrInvalidCredentials) {
+			form := form.NewForm(nil)
+			form.Errors.Add("generic", "Email address or password is invaid")
+			app.render(w, r, "login.page.html", &Templates{
+				Form: form,
+			})
+			return
+		}
+		app.serverError(w, err)
+		return
+	}
+
+	app.session.Put(r, "authenticatedId", id)
+
+	http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
 }
 
 func (app *application) userLogout(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "handle user logout")
+	app.session.Remove(r, "authenticatedId")
+	app.session.Put(r, "flash", "You've logout successfully")
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *application) userSignUp(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "signup.page.html", &Templates{Form: &form.Form{}})
-	//fmt.Fprintln(w, "sign up page")
 }
 
 func (app *application) userSignUpForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "post user sign up data")
-}
+	err := r.ParseForm()
+	if err != nil {
+		app.serverError(w, err)
+	}
 
+	formData := form.NewForm(r.PostForm)
+	userName := r.PostForm.Get("username")
+	email := r.PostForm.Get("email")
+	password := r.PostForm.Get("password")
+	formData.Require("username", "email", "password")
+	formData.MaxLength("username", 255)
+	formData.MaxLength("password", 255)
+	formData.MinLength("password", 8)
+	formData.MatchPattern("email", form.EmailRX)
+
+	if !formData.Valid() {
+		app.render(w, r, "signup.page.html", &Templates{
+			Form: formData,
+		})
+	}
+
+	if err = app.users.Insert(userName, email, password); err != nil {
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			formData.Errors.Add("email", "This email is already existed")
+			app.render(w, r, "signup.page.html", &Templates{
+				Form: formData,
+			})
+		} else {
+			app.serverError(w, err)
+		}
+
+		return
+	}
+
+	app.session.Put(r, "flash", "Sign up successfully! Now you can login.")
+
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
